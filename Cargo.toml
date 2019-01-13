@@ -1,0 +1,7 @@
+[package]
+name = "erajp"
+version = "0.1.0"
+authors = ["Tomochika Hara <git@thara.jp>"]
+edition = "2018"
+
+[dependencies]
