@@ -21,19 +21,13 @@ fn main() {
     let tr_selector = Selector::parse(r#"table[border="1"] tr"#).unwrap();
     let td_selector = Selector::parse("td").unwrap();
 
-    let (mut prevy, mut prevm, mut prevd): (String, String, String) =
-        ("".to_string(), "".to_string(), "".to_string());
-    for node in document.select(&tr_selector) {
-        let cells = node.select(&td_selector).collect::<Vec<_>>();
-        let n_cells = cells.len();
-
-        if n_cells <= 0 {
-            continue;
-        }
-        if cells[1].value().attr("rowspan").is_some() {
-            continue;
-        }
-        let values = match cells.len() {
+    let parsed = document
+        .select(&tr_selector)
+        .map(|e| e.select(&td_selector).collect::<Vec<_>>())
+        .map(|e| (e.len(), e))
+        .filter(|(n_cells, _)| 0 < *n_cells)
+        .filter(|(_, cells)| cells[1].value().attr("rowspan").is_none())
+        .filter_map(|(n_cells, cells)| match n_cells {
             6 => Some((
                 cells[1].text().collect::<Vec<_>>().join(""),
                 cells[2].text().collect::<Vec<_>>().join(""),
@@ -47,12 +41,10 @@ fn main() {
                 cells[5].text().collect::<Vec<_>>().join(""),
             )),
             _ => None,
-        };
-        if values.is_none() {
-            continue;
-        }
-        let (name, ruby, term, changed_at) = values.unwrap();
+        });
 
+    let mut prev: Option<(String, String, String)> = None;
+    for (name, ruby, term, changed_at) in parsed {
         let term: Vec<&str> = term.split("～").collect();
         let changed_at = changed_at.replace("閏", "");
         let changed_at: Vec<&str> = changed_at
@@ -60,18 +52,21 @@ fn main() {
             .map(|e| if e == "？" { "1" } else { e })
             .collect();
 
-        if term[0] == prevy && changed_at[0] == prevm && changed_at[1] == prevd {
-            continue;
+        if let Some((prevy, prevm, prevd)) = &prev {
+            if term[0] == prevy && changed_at[0] == prevm && changed_at[1] == prevd {
+                continue;
+            }
         }
-
         let record = format!(
             "{},{},{},{},{}",
             name, ruby, term[0], changed_at[0], changed_at[1]
         );
         println!("{}", record);
 
-        prevy = term[0].to_string();
-        prevm = changed_at[0].to_string();
-        prevd = changed_at[1].to_string();
+        prev = Some((
+            term[0].to_string(),
+            changed_at[0].to_string(),
+            changed_at[1].to_string(),
+        ))
     }
 }
