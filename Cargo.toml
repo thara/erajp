@@ -4,6 +4,12 @@ version = "0.1.0"
 authors = ["Tomochika Hara <rust@thara.jp>"]
 edition = "2018"
 
+license = "MIT"
+description = "Japanese era converter for Rust"
+repository = "https://github.com/thara/erajp"
+readme = "README.md"
+keywords = ["era", "japanese"]
+
 [dependencies]
 reqwest = "0.9.8"
 scraper = "0.9.0"
