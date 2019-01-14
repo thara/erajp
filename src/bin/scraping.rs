@@ -1,3 +1,6 @@
+use std::fs;
+use std::io::{BufWriter, Write};
+
 extern crate reqwest;
 extern crate scraper;
 use scraper::{Html, Selector};
@@ -44,6 +47,8 @@ fn main() {
         });
 
     let mut prev: Option<(String, String, String)> = None;
+    let mut f = BufWriter::new(fs::File::create("src/era.csv").unwrap());
+
     for (name, ruby, term, changed_at) in parsed {
         let term: Vec<&str> = term.split("～").collect();
         let changed_at = changed_at.replace("閏", "");
@@ -58,10 +63,10 @@ fn main() {
             }
         }
         let record = format!(
-            "{},{},{},{},{}",
+            "{},{},{},{},{}\n",
             name, ruby, term[0], changed_at[0], changed_at[1]
         );
-        println!("{}", record);
+        f.write(record.as_bytes()).unwrap();
 
         prev = Some((
             term[0].to_string(),
