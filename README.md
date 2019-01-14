@@ -1,6 +1,8 @@
 # erajp
 
-Japanese era converter for Rust
+Japanese era converter for Rust.
+
+Inspired by [mattn/go-erajp](https://github.com/mattn/go-erajp).
 
 ## Examples
 
