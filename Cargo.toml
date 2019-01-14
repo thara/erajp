@@ -8,7 +8,6 @@ description = "Japanese era converter for Rust"
 repository = "https://github.com/thara/erajp"
 readme = "README.md"
 keywords = ["era", "japanese"]
-license = "MIT"
 license-file = "LICENSE"
 
 [dependencies]
