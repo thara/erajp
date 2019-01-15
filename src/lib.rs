@@ -61,40 +61,40 @@ lazy_static! {
         v.reverse();
         v
     };
+    static ref ERA_YEARS: Vec<i32> = { ERA_LIST.iter().map(|e| e.year).collect() };
+    static ref ERA_INDEXES: Vec<i32> = {
+        ERA_LIST
+            .iter()
+            .map(|e|
+                Tokyo.ymd_opt(e.year, e.month, e.day).single().unwrap_or_else(|| {
+                   //FIXME Avoid 'No such local times' error with 弘安, 文亀, 永正, 寛永.
+                   // Maybe should use Julian calendar, but no problem in current history.
+                   Tokyo.ymd(e.year, e.month, 28)
+               }).num_days_from_ce()
+            ).collect()
+    };
 }
 
 /// Given a year, return a string of japanese era
 ///
 /// Return `None` if the year doesn't match any eras.
 pub fn to_era_from_year<'a>(year: i32) -> Option<&'a str> {
-    ERA_LIST
+    ERA_YEARS
         .iter()
-        .find(|&era| era.year <= year)
-        .as_ref()
-        .map(|&era| era.name.as_ref())
+        .position(|&x| x <= year)
+        .map(|i| ERA_LIST[i].name.as_ref())
 }
 
 /// Given a local time, return a string of japanese era
 ///
 /// Return `None` if the time doesn't match any eras.
 pub fn to_era(local: &chrono::Date<chrono::offset::Local>) -> Option<&str> {
-    let dt = local.with_timezone(&Tokyo);
+    let base = local.with_timezone(&Tokyo).num_days_from_ce();
 
-    ERA_LIST
+    ERA_INDEXES
         .iter()
-        .find(|&era| {
-            let start = Tokyo
-                .ymd_opt(era.year, era.month, era.day)
-                .single()
-                .unwrap_or_else(|| {
-                    //FIXME Avoid 'No such local times' error with 弘安, 文亀, 永正, 寛永.
-                    // Maybe should use Julian calendar, but no problem in current history.
-                    Tokyo.ymd(era.year, era.month, 28)
-                });
-            0 <= dt.signed_duration_since(start).num_days()
-        })
-        .as_ref()
-        .map(|&era| era.name.as_ref())
+        .position(|&x| x <= base)
+        .map(|i| ERA_LIST[i].name.as_ref())
 }
 
 #[cfg(test)]
