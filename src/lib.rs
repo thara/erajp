@@ -8,7 +8,7 @@
 //!
 //! ```rust
 //! # extern crate erajp;
-//! assert_eq!(Some("平成"), erajp::to_era_from_year(2019));
+//! assert_eq!(Some("令和"), erajp::to_era_from_year(2019));
 //! ```
 //!
 //! a day to Japanese era
@@ -122,6 +122,6 @@ mod test {
         assert_eq!(Some("昭和"), to_era_from_year(1926));
         assert_eq!(Some("昭和"), to_era_from_year(1988));
         assert_eq!(Some("平成"), to_era_from_year(1989));
-        assert_eq!(Some("平成"), to_era_from_year(2019));
+        assert_eq!(Some("令和"), to_era_from_year(2019));
     }
 }
