@@ -19,7 +19,7 @@
 //! use chrono::prelude::*;
 //!
 //! let today = Local::today();
-//! assert_eq!(Some("平成"), erajp::to_era(&today));
+//! assert_eq!(Some("令和"), erajp::to_era(&today));
 //! ```
 extern crate csv;
 
@@ -104,7 +104,7 @@ mod test {
     #[test]
     fn test_to_era() {
         let today = Local::today();
-        assert_eq!(Some("平成"), to_era(&today));
+        assert_eq!(Some("令和"), to_era(&today));
 
         let day = Local.ymd(1861, 2, 19);
         assert_eq!(Some("文久"), to_era(&day));
